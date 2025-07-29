@@ -1,52 +1,23 @@
+function updateBackground(condition) {
+    const screen = document.querySelector(".fullscreen");
 
+    if (!screen) return;
 
+    condition = condition.toLowerCase();
 
-const getWeatherReport={
-"location": {
-    "name": "London",
-    "region": "City of London, Greater London",
-    "country": "United Kingdom",
-    "lat": 51.5171,
-    "lon": -0.1062,
-    "tz_id": "Europe/London",
-    "localtime_epoch": 1753741948,
-    "localtime": "2025-07-28 23:32"
-  },
-  "current": {
-    "last_updated_epoch": 1753741800,
-    "last_updated": "2025-07-28 23:30",
-    "temp_c": 17.4,
-    "temp_f": 63.3,
-    "is_day": 0,
-    "condition": {
-      "text": "Partly cloudy",
-      "icon": "//cdn.weatherapi.com/weather/64x64/night/116.png",
-      "code": 1003
-    },
-    "wind_mph": 5.1,
-    "wind_kph": 8.3,
-    "wind_degree": 329,
-    "wind_dir": "NNW",
-    "pressure_mb": 1020,
-    "pressure_in": 30.12,
-    "precip_mm": 0,
-    "precip_in": 0,
-    "humidity": 68,
-    "cloud": 75,
-    "feelslike_c": 17.4,
-    "feelslike_f": 63.3,
-    "windchill_c": 18.1,
-    "windchill_f": 64.5,
-    "heatindex_c": 18.1,
-    "heatindex_f": 64.5,
-    "dewpoint_c": 9.8,
-    "dewpoint_f": 49.6,
-    "vis_km": 10,
-    "vis_miles": 6,
-    "uv": 0,
-    "gust_mph": 8.5,
-    "gust_kph": 13.7
-  }
+    if (condition.includes("sunny")) {
+        screen.style.background = "linear-gradient(135deg, #fdfbfb, #ebedee)";
+    } else if (condition.includes("rain")) {
+        screen.style.background = "linear-gradient(135deg, #4e54c8, #8f94fb)";
+    } else if (condition.includes("cloud")) {
+        screen.style.background = "linear-gradient(135deg, #bdc3c7, #2c3e50)";
+    } else if (condition.includes("snow")) {
+        screen.style.background = "linear-gradient(135deg, #e0eafc, #cfdef3)";
+    } else if (condition.includes("mist") || condition.includes("fog")) {
+        screen.style.background = "linear-gradient(135deg, #757f9a, #d7dde8)";
+    } else {
+        screen.style.background = "linear-gradient(135deg, #a8c0ff, #3f2b96)";
+    }
 }
 let areaLocation=document.getElementById("location")
 let temprature=document.getElementById("temp")
@@ -62,13 +33,14 @@ let response=await fetch(url);
 let data=await response.json();
 console.log(data);
 
+ const conditionText = data.current.condition.text;
 areaLocation.innerHTML=areaLocation.textContent=`Weather in ${data.location.name}`
 temprature.textContent=`temprature in ${data.current.temp_c}°C`
-locationCondition.textContent=`Wind Speed ${data.current.wind_mph} mph`
+locationCondition.textContent=`${conditionText}`
 areaicon.src=data.current.condition.icon;
 areaicon.alt="Weather icon";
 getRegion.textContent=` ${data.location.region}`
-
+updateBackground(conditionText);
 }catch(error){
     console.error("Error fetching data:", error);
         areaLocation.textContent = "Failed to load data!";
