@@ -1,16 +1,60 @@
+let areaLocation = document.getElementById("location");
+let temprature = document.getElementById("temp");
+let locationCondition = document.getElementById("condition");
+let areaicon = document.getElementById("icon");
+let searchBtn = document.getElementById("searchBtn");
+let getRegion = document.getElementById("region");
+
+async function getWeather(name) {
+    let url = `http://api.weatherapi.com/v1/current.json?key=eec0ba4e49fb4e128b9222914252807&q=${name}&aqi=no`;
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        console.log(data);
+
+        const conditionText = data.current.condition.text.toLowerCase();
+        areaLocation.textContent = `Weather in ${data.location.name}`;
+        temprature.textContent = `Temperature: ${data.current.temp_c}°C`;
+        locationCondition.textContent = `${data.current.condition.text}`;
+        areaicon.src = data.current.condition.icon;
+        areaicon.alt = "Weather icon";
+        getRegion.textContent = `${data.location.region}`;
+
+        updateBackground(conditionText); // Pass condition text directly
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        areaLocation.textContent = "Failed to load data!";
+        temprature.textContent = "";
+        locationCondition.textContent = "";
+        areaicon.src = "";
+    }
+}
+
+searchBtn.addEventListener("click", function () {
+    let inputCity = document.getElementById("cityInput").value.trim();
+    if (inputCity) {
+        getWeather(inputCity);
+    } else {
+        alert("Please enter a city");
+    }
+});
+
 function updateBackground(condition) {
-    const screen = document.querySelector(".fullscreen");
+    let screen = document.querySelector(".fullscreen");
+    let weatherEffects = document.getElementById("weatherEffects");
 
-    if (!screen) return;
+    // Clear old effects
+    weatherEffects.innerHTML = "";
 
-    condition = condition.toLowerCase();
-
+    // Set background and effects
     if (condition.includes("sunny")) {
         screen.style.background = "linear-gradient(135deg, #fdfbfb, #ebedee)";
     } else if (condition.includes("rain")) {
         screen.style.background = "linear-gradient(135deg, #4e54c8, #8f94fb)";
+        createRainEffect(50); // Add rain drops
     } else if (condition.includes("cloud")) {
         screen.style.background = "linear-gradient(135deg, #bdc3c7, #2c3e50)";
+        createCloudEffect(5); // Add clouds
     } else if (condition.includes("snow")) {
         screen.style.background = "linear-gradient(135deg, #e0eafc, #cfdef3)";
     } else if (condition.includes("mist") || condition.includes("fog")) {
@@ -18,43 +62,26 @@ function updateBackground(condition) {
     } else {
         screen.style.background = "linear-gradient(135deg, #a8c0ff, #3f2b96)";
     }
-}
-let areaLocation=document.getElementById("location")
-let temprature=document.getElementById("temp")
-let locationCondition=document.getElementById("condition")
-let areaicon=document.getElementById("icon")
-let searchBtn = document.getElementById("searchBtn");
-let getRegion=document.getElementById("region");
 
-async function getWeather(name){
-let url=`http://api.weatherapi.com/v1/current.json?key=eec0ba4e49fb4e128b9222914252807&q=${name}&aqi=no`
-try{
-let response=await fetch(url);
-let data=await response.json();
-console.log(data);
-
- const conditionText = data.current.condition.text;
-areaLocation.innerHTML=areaLocation.textContent=`Weather in ${data.location.name}`
-temprature.textContent=`temprature in ${data.current.temp_c}°C`
-locationCondition.textContent=`${conditionText}`
-areaicon.src=data.current.condition.icon;
-areaicon.alt="Weather icon";
-getRegion.textContent=` ${data.location.region}`
-updateBackground(conditionText);
-}catch(error){
-    console.error("Error fetching data:", error);
-        areaLocation.textContent = "Failed to load data!";
-        temprature.textContent = "";
-        locationCondition.textContent = "";
-        icon.src = "";
-}
-}
-searchBtn.addEventListener("click",function(){
-    let inputCity=document.getElementById("cityInput").value.trim();
-    if(inputCity){
-        getWeather(inputCity);
-    }else{
-        alert("please enter anther city")
+    // --- Rain effect ---
+    function createRainEffect(count) {
+        for (let i = 0; i < count; i++) {
+            let drop = document.createElement("div");
+            drop.className = "raindrop";
+            drop.style.left = Math.random() * 100 + "vw";
+            drop.style.animationDelay = Math.random() + "s";
+            weatherEffects.appendChild(drop);
+        }
     }
 
-})
+    // --- Cloud effect ---
+    function createCloudEffect(count) {
+        for (let i = 0; i < count; i++) {
+            let cloud = document.createElement("div");
+            cloud.className = "cloud";
+            cloud.style.top = Math.random() * 100 + "px";
+            cloud.style.animationDelay = Math.random() * 20 + "s";
+            weatherEffects.appendChild(cloud);
+        }
+    }
+}
